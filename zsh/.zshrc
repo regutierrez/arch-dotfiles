@@ -1,0 +1,157 @@
+# ============================================================================
+# INITIALIZATION
+# ============================================================================
+
+# uncomment to profile zsh startup, along with zprof (end of line)
+# zmodload zsh/zprof
+
+eval "$(starship init zsh)"
+
+# Homebrew setup
+if [[ -f "/opt/homebrew/bin/brew" ]] then
+  # If you're using macOS, you'll want this enabled
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# ============================================================================
+# PLUGIN MANAGEMENT
+# ============================================================================
+
+# Zinit setup
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Zinit installation
+if [ ! -d "$ZINIT_HOME" ]; then
+   mkdir -p "$(dirname $ZINIT_HOME)"
+   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+
+# Load zinit
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
+
+# ============================================================================
+# EXTERNAL TOOLS
+# ============================================================================
+
+# fzf - fuzzy finder
+source <(fzf --zsh)
+
+# zoxide - smart cd
+eval "$(zoxide init --cmd cd zsh)"
+
+# ============================================================================
+# SHELL CONFIGURATION
+# ============================================================================
+
+# Completions
+autoload -Uz compinit && compinit
+
+# Keybindings
+bindkey -e
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+bindkey '^[w' kill-region
+
+# Other settings
+DISABLE_AUTO_TITLE=true
+
+# History settings
+HISTSIZE=100000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+# HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+# Completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+# ============================================================================
+# ENVIRONMENT
+# ============================================================================
+
+# General paths
+export COLORTERM=truecolor
+export PATH=$PATH:$HOME/.local/bin/
+export PATH=$PATH:$HOME/bin/
+export PATH=$PATH:$HOME/Library/Android/sdk/platform-tools/
+export PATH=$PATH:$HOME/go/bin
+export PATH=$PATH:$HOME/.opencode/bin
+export PATH=$PATH:$HOME/.cargo/bin/ # my helper scripts
+export PATH=/opt/homebrew/share/google-cloud-sdk/bin:"$PATH"
+
+# Environment variables
+export GOOGLE_CLOUD_PROJECT="pael-project"
+export GOOGLE_CLOUD_LOCATION="global"
+export EDITOR=nvim
+
+CLAUDE_CODE_NO_FLICKER=1
+
+# ============================================================================
+# ALIASES
+# ============================================================================
+
+alias ls='eza'
+alias lg='lazygit'
+alias v='nvim'
+alias o='opencode'
+alias ff='fastfetch'
+alias t='tmux'
+alias co='commando'
+alias noco='ssh -t noco tmux -u a'
+alias golgra='ssh -t golgra tmux -u a'
+alias sbs='ssh -t sbs@sbs-apps tmux -u a'
+alias esquie='ssh -t esquie tmux -u a'
+alias gds='git --no-pager diff --stat HEAD'
+# alias ag='Xvfb :100 -screen 0 1920x1080x24 & sleep 1 && DISPLAY=:100 autocutsel -fork & DISPLAY=:100 antigravity --ozone-platform=x11 & sleep 2 && x11vnc -display :100 -forever -rfbauth ~/.vnc/passwd -listen 0.0.0.0 -rfbport 5900 -noxdamage -clipboard'
+
+
+# ============================================================================
+# MY FUNCTIONS
+# ============================================================================
+
+
+# ============================================================================
+# system-generated fluff
+# ============================================================================
+
+# Added by Antigravity
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+
+# fnm
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+
+# uncomment to profile zsh startup, along with zprof (end of line)
+# zprof
+
+# fnm
+FNM_PATH="/home/pael/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+  eval "$(fnm env --shell zsh)"
+fi

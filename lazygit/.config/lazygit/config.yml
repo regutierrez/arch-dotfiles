@@ -1,0 +1,18 @@
+gui:
+  showIcons: true
+  nerdFontsVersion: "3"
+  border: rounded
+  sidePanelWidth: 0.3333
+  showBottomLine: true
+
+git:
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never --true-color=always --line-numbers --syntax-theme="gruvbox-dark" --plus-style="syntax auto" --minus-style="syntax auto" --zero-style="syntax" --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+
+os:
+  editPreset: nvim
+  # On headless SSH sessions, use tmux's clipboard integration (-w) to forward copies to the local terminal clipboard.
+  copyToClipboardCmd: 'tmux set-buffer -w -- {{text}}'
+
+promptToReturnFromSubprocess: false
