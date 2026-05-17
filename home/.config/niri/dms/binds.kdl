@@ -6,6 +6,10 @@ binds {
 
     // === Application Launchers ===
     Mod+Return repeat=false hotkey-overlay-title="Focus/Open Terminal" { spawn "~/.config/niri/focus-or-spawn" "kitty" "kitty"; }
+    Mod+G repeat=false hotkey-overlay-title="Focus/Open Helium Browser" { spawn "~/.config/niri/focus-or-spawn" "helium-browser" "helium-browser"; }
+    Mod+Shift+G repeat=false hotkey-overlay-title="Open New Helium Browser" { spawn "helium-browser"; }
+    Mod+O repeat=false hotkey-overlay-title="Focus/Open Joplin" { spawn "~/.config/niri/focus-or-spawn" "joplin" "joplin"; }
+    Mod+Shift+O repeat=false hotkey-overlay-title="Open New Joplin" { spawn "joplin"; }
     Mod+Shift+Return repeat=false hotkey-overlay-title="Open New Terminal" { spawn "kitty"; }
     Mod+Space hotkey-overlay-title="Application Launcher" {
         spawn "dms" "ipc" "call" "spotlight" "toggle";

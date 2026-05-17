@@ -1,0 +1,11 @@
+# Runtime/app state that should never be tracked
+home/.steampath
+home/.config/net.imput.helium/
+
+# DMS auto-generated Niri config
+home/.config/niri/dms/alttab.kdl
+home/.config/niri/dms/layout.kdl
+home/.config/niri/dms/outputs.kdl
+niri/.config/niri/dms/alttab.kdl
+niri/.config/niri/dms/layout.kdl
+niri/.config/niri/dms/outputs.kdl

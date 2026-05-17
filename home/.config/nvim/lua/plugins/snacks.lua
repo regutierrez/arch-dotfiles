@@ -21,6 +21,12 @@ return {
             { icon = " ", key = "f", desc = "Find File", action = ":lua require('fff').find_files()" },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
             { icon = " ", key = "g", desc = "Find Text", action = ":lua require('fff').live_grep()" },
+            {
+              icon = " ",
+              key = "c",
+              desc = "Config",
+              action = ":lua Snacks.picker.files({ cwd = vim.fn.stdpath('config'), hidden = true, ignored = true })",
+            },
             { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },

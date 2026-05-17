@@ -1,41 +1,57 @@
 SHELL := /bin/sh
 
-STOW ?= stow
 TARGET ?= $(HOME)
+ROOT := $(CURDIR)
+HOME_DIR := $(ROOT)/home
 
-# Every top-level directory is treated as a stow package.
-PACKAGES := $(shell find . -mindepth 1 -maxdepth 1 -type d \
-	-not -name '.git' \
-	-not -name '.github' \
-	-printf '%f\n' | sort)
+# Link top-level home entries directly, except .config. For .config, link each
+# tracked file/dir entry into the existing ~/.config tree so local app files are
+# not clobbered.
+HOME_ENTRIES := $(shell find "$(HOME_DIR)" -mindepth 1 -maxdepth 1 ! -name '.config' -printf '%f\n' | sort)
+CONFIG_FILES := $(shell [ -d "$(HOME_DIR)/.config" ] && find "$(HOME_DIR)/.config" -type f -printf '%P\n' | sort)
 
-.PHONY: help install delete restow adopt list check
+.PHONY: help install delete list check
 
 help:
-	@echo "Usage: make <target> [PACKAGES=\"pkg1 pkg2\"] [TARGET=/path]"
+	@echo "Usage: make <target> [TARGET=/path]"
 	@echo
 	@echo "Targets:"
-	@echo "  install  Symlink packages into TARGET; default TARGET=$(HOME)"
-	@echo "  delete   Remove stowed symlinks from TARGET"
-	@echo "  restow   Recreate symlinks in TARGET"
-	@echo "  adopt    Adopt existing files from TARGET into this repo, then stow"
-	@echo "  list     Show detected packages"
-	@echo "  check    Preview what install would do"
+	@echo "  install  Symlink tracked home files into TARGET; default TARGET=$(HOME)"
+	@echo "  delete   Remove symlinks created by install"
+	@echo "  list     Show links that would be managed"
+	@echo "  check    Preview install commands"
 
 install:
-	$(STOW) --target="$(TARGET)" $(PACKAGES)
+	@mkdir -p "$(TARGET)" "$(TARGET)/.config"
+	@for entry in $(HOME_ENTRIES); do \
+		ln -sfnT "$(HOME_DIR)/$$entry" "$(TARGET)/$$entry" && \
+		echo "linked $(TARGET)/$$entry -> $(HOME_DIR)/$$entry"; \
+	done
+	@for file in $(CONFIG_FILES); do \
+		src="$(HOME_DIR)/.config/$$file"; \
+		dst="$(TARGET)/.config/$$file"; \
+		[ "$$(readlink -f "$$src")" = "$$(readlink -f "$$dst" 2>/dev/null)" ] && continue; \
+		mkdir -p "$$(dirname "$$dst")"; \
+		ln -sfn "$$src" "$$dst" && \
+		echo "linked $$dst -> $$src"; \
+	done
 
 delete:
-	$(STOW) --delete --target="$(TARGET)" $(PACKAGES)
-
-restow:
-	$(STOW) --restow --target="$(TARGET)" $(PACKAGES)
-
-adopt:
-	$(STOW) --adopt --target="$(TARGET)" $(PACKAGES)
+	@for entry in $(HOME_ENTRIES); do \
+		[ ! -L "$(TARGET)/$$entry" ] || rm "$(TARGET)/$$entry"; \
+	done
+	@for file in $(CONFIG_FILES); do \
+		[ ! -L "$(TARGET)/.config/$$file" ] || rm "$(TARGET)/.config/$$file"; \
+	done
 
 check:
-	$(STOW) --no --verbose --target="$(TARGET)" $(PACKAGES)
+	@for entry in $(HOME_ENTRIES); do \
+		echo "ln -sfnT $(HOME_DIR)/$$entry $(TARGET)/$$entry"; \
+	done
+	@for file in $(CONFIG_FILES); do \
+		echo "mkdir -p $$(dirname $(TARGET)/.config/$$file) && ln -sfn $(HOME_DIR)/.config/$$file $(TARGET)/.config/$$file"; \
+	done
 
 list:
-	@printf '%s\n' $(PACKAGES)
+	@for entry in $(HOME_ENTRIES); do echo "$(TARGET)/$$entry"; done
+	@for file in $(CONFIG_FILES); do echo "$(TARGET)/.config/$$file"; done
