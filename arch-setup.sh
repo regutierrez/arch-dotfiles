@@ -44,6 +44,7 @@ CLI_TOOLS=(
 APPS_SERVICES=(
   joplin-bin
   helium-browser-bin
+  google-chrome
   flatpak
   tailscale
 )
@@ -95,6 +96,14 @@ install_node() {
   require_command npm
 }
 
+install_chrome_devtools_mcp() {
+  require_command node
+  require_command npm
+
+  info "Installing/updating chrome-devtools-mcp"
+  npm install -g chrome-devtools-mcp@latest
+}
+
 install_pi() {
   require_command curl
   require_command node
@@ -102,6 +111,13 @@ install_pi() {
 
   info "Installing/updating pi coding agent"
   curl -fsSL https://pi.dev/install.sh | sh
+}
+
+install_ampcode() {
+  require_command curl
+
+  info "Installing/updating Amp"
+  curl -fsSL https://ampcode.com/install.sh | bash
 }
 
 configure_git() {
@@ -147,7 +163,9 @@ main() {
   install_dms
   install_packages
   install_node
+  install_chrome_devtools_mcp
   install_pi
+  install_ampcode
   configure_git
   configure_ssh
   enable_services
