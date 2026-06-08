@@ -120,6 +120,13 @@ install_ampcode() {
   curl -fsSL https://ampcode.com/install.sh | bash
 }
 
+install_zed() {
+  require_command curl
+
+  info "Installing/updating Zed editor"
+  curl -f https://zed.dev/install.sh | sh
+}
+
 configure_git() {
   info "Configuring git"
   git config --global user.name "$GIT_USER_NAME"
@@ -166,6 +173,7 @@ main() {
   install_chrome_devtools_mcp
   install_pi
   install_ampcode
+  install_zed
   configure_git
   configure_ssh
   enable_services
